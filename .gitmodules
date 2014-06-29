@@ -1,0 +1,3 @@
+[submodule "jni/mysql-hyperloglog"]
+	path = jni/mysql-hyperloglog
+	url = https://github.com/amirtuval/mysql-hyperloglog.git
