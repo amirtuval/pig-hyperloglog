@@ -1,0 +1,1 @@
+javah -classpath target/classes/ -o jni/pighll.hpp com.amirtuval.pighll.HyperLogLog
