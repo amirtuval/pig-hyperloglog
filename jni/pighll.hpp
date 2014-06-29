@@ -17,10 +17,50 @@ JNIEXPORT jlong JNICALL Java_com_amirtuval_pighll_HyperLogLog_createHll
 
 /*
  * Class:     com_amirtuval_pighll_HyperLogLog
+ * Method:    createHllFromString
+ * Signature: (Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_amirtuval_pighll_HyperLogLog_createHllFromString
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_amirtuval_pighll_HyperLogLog
  * Method:    freeHll
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_amirtuval_pighll_HyperLogLog_freeHll
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_amirtuval_pighll_HyperLogLog
+ * Method:    addElement
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_amirtuval_pighll_HyperLogLog_addElement
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_amirtuval_pighll_HyperLogLog
+ * Method:    estimateHll
+ * Signature: (J)D
+ */
+JNIEXPORT jdouble JNICALL Java_com_amirtuval_pighll_HyperLogLog_estimateHll
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_amirtuval_pighll_HyperLogLog
+ * Method:    mergeHll
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_amirtuval_pighll_HyperLogLog_mergeHll
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_amirtuval_pighll_HyperLogLog
+ * Method:    hllAsString
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_amirtuval_pighll_HyperLogLog_hllAsString
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
