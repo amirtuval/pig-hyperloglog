@@ -9,6 +9,7 @@ import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class HLL_COMPUTE extends EvalFunc<Long> implements Algebraic {
 
@@ -18,28 +19,35 @@ public class HLL_COMPUTE extends EvalFunc<Long> implements Algebraic {
 
     static public class Initial extends EvalFunc<Tuple> {
         public Tuple exec(Tuple input) throws IOException {
-            return TupleFactory.getInstance().newTuple(hllCount(input).asString());
+            DataBag data = (DataBag) input.get(0);
+
+            if (data.size() == 0) {
+                return TupleFactory.getInstance().newTuple();
+            }
+
+            return TupleFactory.getInstance().newTuple(Arrays.asList("Value", data.iterator().next().toString()));
          }
     }
 
     static public class Intermed extends EvalFunc<Tuple> {
         public Tuple exec(Tuple input) throws IOException {
-            return TupleFactory.getInstance().newTuple(hllMerge(input).asString());
+
+            return TupleFactory.getInstance().newTuple(Arrays.asList("HLL", hllFromHlls(input).asString()));
         }
     }
 
     static public class Final extends EvalFunc<Long> {
         public Long exec(Tuple input) throws IOException {
-            return (long)hllMerge(input).estimate();
+            return (long) hllFromHlls(input).estimate();
         }
     }
 
     @Override
     public Long exec(Tuple tuple) throws IOException {
-        return (long)hllCount(tuple).estimate();
+        return (long) hllFromValues(tuple).estimate();
     }
 
-    private static HyperLogLog hllCount(Tuple input) throws ExecException {
+    private static HyperLogLog hllFromValues(Tuple input) throws ExecException {
         Object values = input.get(0);
 
         HyperLogLog hll = new HyperLogLog(12);
@@ -55,7 +63,7 @@ public class HLL_COMPUTE extends EvalFunc<Long> implements Algebraic {
         return hll;
     }
 
-    private static HyperLogLog hllMerge(Tuple input) throws ExecException {
+    private static HyperLogLog hllFromHlls(Tuple input) throws ExecException {
         HyperLogLog hll = new HyperLogLog(12);
         Object values = input.get(0);
 
@@ -63,7 +71,17 @@ public class HLL_COMPUTE extends EvalFunc<Long> implements Algebraic {
             DataBag data = (DataBag)values;
 
             for (Tuple value : data) {
-                hll.merge(new HyperLogLog(value.get(0).toString()));
+                if (value.size() == 0) {
+                    continue;
+                }
+
+                String valueType = value.get(0).toString();
+                String valueStr = value.get(1).toString();
+                if (valueType.equals("Value")) {
+                    hll.add(valueStr);
+                } else {
+                    hll.merge(new HyperLogLog(valueStr));
+                }
             }
         }
 
