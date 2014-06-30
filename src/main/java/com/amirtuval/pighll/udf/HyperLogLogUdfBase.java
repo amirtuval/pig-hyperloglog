@@ -1,5 +1,6 @@
 package com.amirtuval.pighll.udf;
 
+import com.amirtuval.pighll.Constants;
 import com.amirtuval.pighll.HyperLogLog;
 import org.apache.commons.logging.Log;
 import org.apache.pig.Algebraic;
@@ -11,7 +12,6 @@ import org.apache.pig.data.TupleFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 public abstract class HyperLogLogUdfBase<TReturnType>
         extends EvalFunc<TReturnType> implements Algebraic {
@@ -72,7 +72,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
     }
 
     protected static HyperLogLog hllFromTuples(Tuple input) throws ExecException {
-        HyperLogLog hll = new HyperLogLog(12);
+        HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
 
         Object values = input.get(0);
 
@@ -100,7 +100,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
     protected static HyperLogLog hllFromHlls(Tuple input, Log logger) throws ExecException {
         logger.error("!!! DEBUG !!! " + input.get(0).getClass().getName());
 
-        final HyperLogLog hll = new HyperLogLog(12);
+        final HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
 
         iterateInput(input, new InputAction() {
             public void call(String item) {
@@ -112,7 +112,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
     }
 
     protected static HyperLogLog hllFromValues(Tuple input) throws ExecException {
-        final HyperLogLog hll = new HyperLogLog(12);
+        final HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
 
         iterateInput(input, new InputAction() {
             public void call(String item) {
