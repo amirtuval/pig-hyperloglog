@@ -2,7 +2,6 @@ package com.amirtuval.pighll.udf;
 
 import com.amirtuval.pighll.Constants;
 import com.amirtuval.pighll.HyperLogLog;
-import org.apache.commons.logging.Log;
 import org.apache.pig.Algebraic;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.backend.executionengine.ExecException;
@@ -97,9 +96,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
         return hll;
     }
 
-    protected static HyperLogLog hllFromHlls(Tuple input, Log logger) throws ExecException {
-        logger.error("!!! DEBUG !!! " + input.get(0).getClass().getName());
-
+    protected static HyperLogLog hllFromHlls(Tuple input) throws ExecException {
         final HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
 
         iterateInput(input, new InputAction() {
@@ -130,6 +127,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
             return TupleFactory.getInstance().newTuple();
         }
 
-        return TupleFactory.getInstance().newTuple(Arrays.asList(valueType, data.iterator().next().toString()));
+        Tuple value = data.iterator().next();
+        return TupleFactory.getInstance().newTuple(Arrays.asList(valueType, value.get(0).toString()));
     }
 }

@@ -10,8 +10,7 @@ public class HLL_MERGE_COMPUTE extends HyperLogLogUdfBase<Long> {
 
     @Override
     public Long exec(Tuple tuple) throws IOException {
-        getLogger().error("!!! DEBUG !!! HLL_MERGE_COMPUTE.exec");
-        return (long)hllFromHlls(tuple, getLogger()).estimate();
+        return (long)hllFromHlls(tuple).estimate();
     }
 
 }

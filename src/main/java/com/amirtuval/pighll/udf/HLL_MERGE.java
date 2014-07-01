@@ -10,7 +10,7 @@ public class HLL_MERGE extends HyperLogLogUdfBase<String> {
 
     @Override
     public String exec(Tuple tuple) throws IOException {
-        return hllFromHlls(tuple, getLogger()).asString();
+        return hllFromHlls(tuple).asString();
     }
 
 }
