@@ -8,7 +8,8 @@ Other implementations exist (for example, [this one](http://datafu.incubator.apa
 Usage
 =====
 
-Four separate UDFs exist - HLL_CREATE, HLL_COMPUTE, HLL_MERGE, HLL_MERGE_COMPUTE.  
+Four separate UDFs exist -  
+HLL_CREATE, HLL_COMPUTE, HLL_MERGE, HLL_MERGE_COMPUTE.  
 These are exactly the same functions as in [the hyperloglog mysql plugin](https://github.com/amirtuval/mysql-hyperloglog), so check out its documentation.  
 You can also see the [UdfTest.java](src/test/java/com/amirtuval/pighll/udf/UdfTest.java) for examples.  
   
