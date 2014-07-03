@@ -20,3 +20,21 @@ What if I do not use Apache Pig
 
 [The HyperLogLog class](src/main/java/com/amirtuval/pighll/HyperLogLog.java) is a java class the wraps the underlying c++ implementation.  
 It can be used from Hadoop map-reduce, Hive, HBase or any other JVM based program.
+
+Compilation
+===========
+
+**Prerequisites:** You should have [CMake](http://www.cmake.org) and [Maven 2](http://maven.apache.org/) installed.  
+
+```bash
+git submodule update --init
+cd jni/mysql-hyperloglog
+git submodule update --init
+cd ..
+cmake .
+make
+cd ..
+mvn package
+```
+
+**Note:** Tested on ubuntu, but should work fine on most platforms.
