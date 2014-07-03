@@ -13,3 +13,9 @@ These are exactly the same functions as in [the hyperloglog mysql plugin](https:
 You can also see the [UdfTest.java](src/test/java/com/amirtuval/pighll/udf/UdfTest.java) for examples.  
   
 **Note:** When used from Apache pig, you need to register the project jar file, but also make sure that the libpighll.so file (or DLL on windows) can be found in the java library path.
+
+What if I do not use pig
+========================
+
+[The HyperLogLog class](src/main/java/com/amirtuval/pighll/HyperLogLog.java) is a java class the wraps the underlying c++ implementation.  
+It can be used from Hadoop map-reduce, Hive, HBase or any other JVM based program.
