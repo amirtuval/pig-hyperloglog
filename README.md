@@ -12,4 +12,4 @@ Four separate UDFs exist - HLL_CREATE, HLL_COMPUTE, HLL_MERGE, HLL_MERGE_COMPUTE
 These are exactly the same functions as in [the hyperloglog mysql plugin](https://github.com/amirtuval/mysql-hyperloglog), so check out its documentation.  
 You can also see the [UdfTest.java](src/test/java/com/amirtuval/pighll/udf/UdfTest.java) for examples.  
   
-*Note:* When used from Apache pig, you need to register the project jar file, but also make sure that the libpighll.so file (or DLL on windows) can be found in the java library path.
+**Note:** When used from Apache pig, you need to register the project jar file, but also make sure that the libpighll.so file (or DLL on windows) can be found in the java library path.
