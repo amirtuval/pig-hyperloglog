@@ -128,6 +128,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
         }
 
         Tuple value = data.iterator().next();
-        return TupleFactory.getInstance().newTuple(Arrays.asList(valueType, value.get(0).toString()));
+        Object fieldValue = value.get(0);
+        return TupleFactory.getInstance().newTuple(Arrays.asList(valueType, fieldValue == null ? "" : fieldValue.toString()));
     }
 }
