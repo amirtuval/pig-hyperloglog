@@ -11,6 +11,6 @@ public class HLL_CREATE extends HyperLogLogUdfBase<String> {
 
     @Override
     public String exec(Tuple tuple) throws IOException {
-        return hllFromValues(tuple).asString();
+        return hllFromValues(tuple, normalHll()).asString();
     }
 }

@@ -11,6 +11,6 @@ public class HLL_COMPUTE extends HyperLogLogUdfBase<Long> {
 
     @Override
     public Long exec(Tuple tuple) throws IOException {
-        return (long) hllFromValues(tuple).estimate();
+        return (long) hllFromValues(tuple, normalHll()).estimate();
     }
 }

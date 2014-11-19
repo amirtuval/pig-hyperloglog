@@ -34,19 +34,35 @@ public abstract class HyperLogLogUdfBase<TReturnType>
 
     static public class Intermed extends EvalFunc<Tuple> {
         public Tuple exec(Tuple input) throws IOException {
-            return TupleFactory.getInstance().newTuple(Arrays.asList(HLL_VALUE, hllFromTuples(input).asString()));
+            return TupleFactory.getInstance().newTuple(Arrays.asList(HLL_VALUE, hllFromTuples(input, hllCreator()).asString()));
+        }
+
+        private CreateHll hllCreator() {
+            return normalHll();
+        }
+    }
+
+    static public class LegacyIntermed extends Intermed {
+        private CreateHll hllCreator() {
+            return legacyHll();
         }
     }
 
     static public class FinalEstimate extends EvalFunc<Long> {
         public Long exec(Tuple input) throws IOException {
-            return (long) hllFromTuples(input).estimate();
+            return (long) hllFromTuples(input, normalHll()).estimate();
         }
     }
 
     static public class FinalHll extends EvalFunc<String> {
         public String exec(Tuple input) throws IOException {
-            return hllFromTuples(input).asString();
+            return hllFromTuples(input, normalHll()).asString();
+        }
+    }
+
+    static public class LegacyFinalHll extends EvalFunc<String> {
+        public String exec(Tuple input) throws IOException {
+            return hllFromTuples(input, legacyHll()).asString();
         }
     }
 
@@ -74,7 +90,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
         return null;
     }
 
-    protected static HyperLogLog hllFromTuples(Tuple input) throws ExecException {
+    protected static HyperLogLog hllFromTuples(Tuple input, CreateHll creator) throws ExecException {
         HyperLogLog hll = null;
 
         Object values = input.get(0);
@@ -91,7 +107,7 @@ public abstract class HyperLogLogUdfBase<TReturnType>
                 String valueStr = value.get(1).toString();
                 if (valueType.equals(SCALAR_VALUE)) {
                     if (hll == null)
-                        hll = emptyHll();
+                        hll = creator.create();
                     hll.add(valueStr);
                 } else {
                     HyperLogLog currentHll = new HyperLogLog(valueStr);
@@ -121,19 +137,41 @@ public abstract class HyperLogLogUdfBase<TReturnType>
         });
     }
 
-    protected static HyperLogLog hllFromValues(Tuple input) throws ExecException {
+    protected interface CreateHll {
+        HyperLogLog create();
+    }
+
+    protected static class CreateNormalHll implements CreateHll {
+
+        public HyperLogLog create() {
+            return new HyperLogLog(Constants.HLL_BIT_WIDTH, false);
+        }
+    }
+
+    protected static CreateHll normalHll() {
+        return new CreateNormalHll();
+    }
+
+    protected static class CreateLegacyHll implements CreateHll {
+
+        public HyperLogLog create() {
+            return new HyperLogLog(12, true);
+        }
+    }
+
+    protected static CreateHll legacyHll() {
+        return new CreateLegacyHll();
+    }
+
+    protected static HyperLogLog hllFromValues(Tuple input, final CreateHll creator) throws ExecException {
         return iterateInput(input, new InputAction() {
             public HyperLogLog call(HyperLogLog current, String item) {
                 if (current == null)
-                    current = emptyHll();
+                    current = creator.create();
                 current.add(item);
                 return current;
             }
         });
-    }
-
-    private static HyperLogLog emptyHll() {
-        return new HyperLogLog(Constants.HLL_BIT_WIDTH, false);
     }
 
     protected static Tuple tupleFromSingleValue(Tuple input, String valueType) throws ExecException {
