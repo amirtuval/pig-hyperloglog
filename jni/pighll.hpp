@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_amirtuval_pighll_HyperLogLog
  * Method:    createHll
- * Signature: (I)J
+ * Signature: (IZ)J
  */
 JNIEXPORT jlong JNICALL Java_com_amirtuval_pighll_HyperLogLog_createHll
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jint, jboolean);
 
 /*
  * Class:     com_amirtuval_pighll_HyperLogLog

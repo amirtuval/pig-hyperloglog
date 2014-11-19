@@ -7,7 +7,7 @@ public class HyperLogLog {
 
     private long mHll;
 
-    private native long createHll(int b);
+    private native long createHll(int b, boolean legacyMode);
     private native long createHllFromString(String hllStr);
     private native void freeHll(long hll);
     private native void addElement(long hll, String element);
@@ -16,7 +16,11 @@ public class HyperLogLog {
     private native String hllAsString(long hll);
 
     public HyperLogLog(int b) {
-        mHll = createHll(b);
+        this(b, true);
+    }
+
+    public HyperLogLog(int b, boolean legacyMode) {
+        mHll = createHll(b, legacyMode);
     }
 
     public HyperLogLog(String hllStr) {

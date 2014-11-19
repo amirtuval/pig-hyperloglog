@@ -2,8 +2,8 @@
 #include "SerializedHyperLogLog.hpp"
 
 JNIEXPORT jlong JNICALL Java_com_amirtuval_pighll_HyperLogLog_createHll
-  (JNIEnv *, jobject, jint b) {
-  return (jlong)new SerializedHyperLogLog(b);
+  (JNIEnv *, jobject, jint b, jboolean legacyMode) {
+  return (jlong)new SerializedHyperLogLog(b, legacyMode);
 }
 
 JNIEXPORT jlong JNICALL Java_com_amirtuval_pighll_HyperLogLog_createHllFromString
