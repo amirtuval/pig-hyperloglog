@@ -37,13 +37,14 @@ public abstract class HyperLogLogUdfBase<TReturnType>
             return TupleFactory.getInstance().newTuple(Arrays.asList(HLL_VALUE, hllFromTuples(input, hllCreator()).asString()));
         }
 
-        private CreateHll hllCreator() {
+        protected CreateHll hllCreator() {
             return normalHll();
         }
     }
 
     static public class LegacyIntermed extends Intermed {
-        private CreateHll hllCreator() {
+        @Override
+        protected CreateHll hllCreator() {
             return legacyHll();
         }
     }
