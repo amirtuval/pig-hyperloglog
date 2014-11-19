@@ -15,7 +15,7 @@ public class UdfTest extends TestCase {
     public void testCompute() throws IOException {
         PigServer pig = new PigServer(ExecType.LOCAL);
 
-        pig.registerQuery("A = LOAD 'jni/mysql-hyperloglog/sql/data.csv' using PigStorage(',') AS (url:chararray, user_id:int, visit_time: chararray, visit_time_in_minutes: int);");
+        pig.registerQuery("A = LOAD '../jni/mysql-hyperloglog/sql/data.csv' using PigStorage(',') AS (url:chararray, user_id:int, visit_time: chararray, visit_time_in_minutes: int);");
         pig.registerQuery("B = GROUP A BY url;");
         pig.registerQuery("C = FOREACH B GENERATE group, com.amirtuval.pighll.udf.HLL_COMPUTE(A.user_id);");
 
@@ -37,7 +37,7 @@ public class UdfTest extends TestCase {
     public void testAllUDFs() throws IOException {
         PigServer pig = new PigServer(ExecType.LOCAL);
 
-        pig.registerQuery("A = LOAD 'jni/mysql-hyperloglog/sql/data.csv' using PigStorage(',') AS (url:chararray, user_id:int, visit_time: chararray, visit_time_in_minutes: int);");
+        pig.registerQuery("A = LOAD '../jni/mysql-hyperloglog/sql/data.csv' using PigStorage(',') AS (url:chararray, user_id:int, visit_time: chararray, visit_time_in_minutes: int);");
         pig.registerQuery("B = GROUP A BY url;");
         pig.registerQuery("C = FOREACH B GENERATE group as url, com.amirtuval.pighll.udf.HLL_CREATE(A.user_id) as hll;");
         pig.registerQuery("D = GROUP C ALL;");
