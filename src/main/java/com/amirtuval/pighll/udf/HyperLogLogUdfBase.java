@@ -51,27 +51,31 @@ public abstract class HyperLogLogUdfBase<TReturnType>
     }
 
     private static interface InputAction {
-        void call(String item);
+        HyperLogLog call(HyperLogLog current, String item);
     }
 
-    private static void iterateInput(Tuple input, InputAction action) throws ExecException {
+    private static HyperLogLog iterateInput(Tuple input, InputAction action) throws ExecException {
         Object values = input.get(0);
 
         if (values instanceof String) {
-            action.call(values.toString());
+            return action.call(null, values.toString());
         }
 
         if (values instanceof DataBag) {
             DataBag data = (DataBag) values;
 
+            HyperLogLog current = null;
             for (Tuple value : data) {
-                action.call(value.get(0).toString());
+                current = action.call(current, value.get(0).toString());
             }
+            return current;
         }
+
+        return null;
     }
 
     protected static HyperLogLog hllFromTuples(Tuple input) throws ExecException {
-        HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
+        HyperLogLog hll = null;
 
         Object values = input.get(0);
 
@@ -86,9 +90,16 @@ public abstract class HyperLogLogUdfBase<TReturnType>
                 String valueType = value.get(0).toString();
                 String valueStr = value.get(1).toString();
                 if (valueType.equals(SCALAR_VALUE)) {
+                    if (hll == null)
+                        hll = emptyHll();
                     hll.add(valueStr);
                 } else {
-                    hll.merge(new HyperLogLog(valueStr));
+                    HyperLogLog currentHll = new HyperLogLog(valueStr);
+                    if (hll == null) {
+                        hll = currentHll;
+                    } else {
+                        hll.merge(currentHll);
+                    }
                 }
             }
         }
@@ -97,27 +108,32 @@ public abstract class HyperLogLogUdfBase<TReturnType>
     }
 
     protected static HyperLogLog hllFromHlls(Tuple input) throws ExecException {
-        final HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
-
-        iterateInput(input, new InputAction() {
-            public void call(String item) {
-                hll.merge(new HyperLogLog(item));
+        return iterateInput(input, new InputAction() {
+            public HyperLogLog call(HyperLogLog current,String item) {
+                HyperLogLog newHll = new HyperLogLog(item);
+                if (current != null) {
+                    current.merge(newHll);
+                    return current;
+                } else {
+                    return newHll;
+                }
             }
         });
-
-        return hll;
     }
 
     protected static HyperLogLog hllFromValues(Tuple input) throws ExecException {
-        final HyperLogLog hll = new HyperLogLog(Constants.HLL_BIT_WIDTH);
-
-        iterateInput(input, new InputAction() {
-            public void call(String item) {
-                hll.add(item);
+        return iterateInput(input, new InputAction() {
+            public HyperLogLog call(HyperLogLog current, String item) {
+                if (current == null)
+                    current = emptyHll();
+                current.add(item);
+                return current;
             }
         });
+    }
 
-        return hll;
+    private static HyperLogLog emptyHll() {
+        return new HyperLogLog(Constants.HLL_BIT_WIDTH, false);
     }
 
     protected static Tuple tupleFromSingleValue(Tuple input, String valueType) throws ExecException {
